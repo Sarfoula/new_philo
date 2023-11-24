@@ -6,15 +6,15 @@
 #    By: yallo <yallo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/24 06:18:38 by yallo             #+#    #+#              #
-#    Updated: 2023/11/24 12:41:59 by yallo            ###   ########.fr        #
+#    Updated: 2023/11/24 12:48:44 by yallo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = gcc
-FLAGS = -Wall -Werror -Wextra -pthread -march=native
-#SANITIZE = -fsanitize=thread
+HEADER = philo.h
+FLAGS = -Wall -Werror -Wextra -pthread
 
 SRC_DIR = src/
 OBJ_DIR = obj/
@@ -30,7 +30,7 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(FLAGS) $(OBJS) $(SANITIZE) -O3 -o $(NAME)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c $(HEADER) Makefile | $(OBJ_DIR)
 	$(CC) $(FLAGS) $(SANITIZE) -c $< -o $@
 
 $(OBJ_DIR):
