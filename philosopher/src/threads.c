@@ -6,7 +6,7 @@
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 17:28:55 by yallo             #+#    #+#             */
-/*   Updated: 2023/11/23 18:51:40 by yallo            ###   ########.fr       */
+/*   Updated: 2023/11/24 11:55:38 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,12 @@ int create_threads(t_data *data)
 	{
 		data->philos[i].last_meal = start;
 		if (pthread_create(&data->philos[i].thread, NULL, &routine, (void *) &data->philos[i]) != 0)
-			return (free_all(data, data->philos, "Error failed to create thread\n"), 1);
+			return (write(2, "Error failed to create thread\n", 31), 1);
 		i++;
 	}
+	pthread_mutex_lock(data->philos->dead);
+	data->dead_flag = 0;
+	pthread_mutex_unlock(data->philos->dead);
 	return (0);
 }
 
@@ -38,7 +41,7 @@ int join_threads(t_data *data)
 	while (i < data->nbr_philo)
 	{
 		if (pthread_join(data->philos[i].thread, NULL) != 0)
-			return (free_all(data, data->philos, "Error failed to join thread\n"), 1);
+			return (write(2, "Error failed to join thread\n", 29), 1);
 		i++;
 	}
 	return (0);

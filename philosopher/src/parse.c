@@ -6,7 +6,7 @@
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 14:06:11 by yallo             #+#    #+#             */
-/*   Updated: 2023/11/13 16:38:03 by yallo            ###   ########.fr       */
+/*   Updated: 2023/11/24 05:28:15 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	check_str(char *str, int idx)
 	return (0);
 }
 
-int	parse(int argc, char **argv)
+int	check_args(int argc, char **argv)
 {
 	int	i;
 	int	j;

@@ -6,28 +6,33 @@
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 14:04:12 by yallo             #+#    #+#             */
-/*   Updated: 2023/11/23 18:57:45 by yallo            ###   ########.fr       */
+/*   Updated: 2023/11/24 12:26:18 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../philo.h"
 
-
-
 int main(int argc, char **argv)
 {
-	t_data	data;
-	t_philo	philos;
+	t_data			data;
+	t_philo			philo[MAX_PHILO];
+	pthread_mutex_t	forks[MAX_PHILO];
 
- 	if (argc != 5 && argc != 6)
+	data.philos = philo;
+	data.forks = forks;
+	if (argc != 5 && argc != 6)
 		return (write(2, "Error: Wrong number of arguments\n", 33), 0);
-	if (parse(argc, argv) == 1)
+	if (check_args(argc, argv) == 1)
 		return (0);
-	if(init(&data, &philos, argv) == 1)
+	if (init(&data, philo, argv) == 1)
 		return (0);
 	create_threads(&data);
-	monitoring(data.philos);
+	if (monitoring(&data) == 1)
+	{
+		pthread_mutex_lock(&data.dead);
+		data.dead_flag = 1;
+		pthread_mutex_unlock(&data.dead);
+	}
 	join_threads(&data);
-	free_all(&data, &philos, NULL);
 	return (0);
 }

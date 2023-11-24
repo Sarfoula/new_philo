@@ -6,7 +6,7 @@
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 16:05:58 by yallo             #+#    #+#             */
-/*   Updated: 2023/11/23 18:50:45 by yallo            ###   ########.fr       */
+/*   Updated: 2023/11/24 12:19:28 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 
 # include <stdio.h>
 
+#define MAX_PHILO 200
+
 typedef struct s_philo
 {
 	int				id;
@@ -29,9 +31,9 @@ typedef struct s_philo
 	int				*next_fork;
 	int				meal_eaten;
 	size_t			last_meal;
+	int				*dead_flag;
 	pthread_mutex_t	*dead;
 	pthread_mutex_t	*eating;
-	pthread_mutex_t	*prompt;
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	*m_next_fork;
 	struct s_data			*data;
@@ -48,32 +50,34 @@ typedef struct s_data
 	size_t			time_to_sleep;
 	pthread_mutex_t	dead;
 	pthread_mutex_t	eating;
-	pthread_mutex_t	prompt;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
 }			t_data;
 
 //Parse
-int			parse(int argc, char **argv);
+int			check_args(int argc, char **argv);
 
 //Init
-int	init(t_data *data, t_philo *philos, char **argv);
+int			init(t_data *data, t_philo *philos, char **argv);
+
+//Forks
+int			take_fork(pthread_mutex_t *m_fork, int *fork);
+void		free_forks(t_philo *philo);
 
 //Routine
-void *routine(void *pointer);
+void		*routine(void *pointer);
 
 //Monitoring
-void	*monitoring(t_philo *philos);
+int			monitoring(t_data *data);
 
 //Threads
-int create_threads(t_data *data);
-int join_threads(t_data *data);
+int			create_threads(t_data *data);
+int			join_threads(t_data *data);
 
 //Utils
 long		ft_atoi(const char *str);
-long int	get_time(void);
-void		free_all(t_data *data, t_philo *philos, char *display);
-void		ft_prompt(t_philo *philo, char *display);
-void		ft_usleep(size_t time);
+size_t		get_time(void);
+int			ft_prompt(t_philo *philo, char *display);
+void		ft_usleep(size_t time, t_philo *philo);
 
 #endif

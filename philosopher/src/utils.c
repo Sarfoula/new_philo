@@ -6,7 +6,7 @@
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 14:46:29 by yallo             #+#    #+#             */
-/*   Updated: 2023/11/23 18:56:53 by yallo            ###   ########.fr       */
+/*   Updated: 2023/11/24 12:21:01 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ long	ft_atoi(const char *str)
 	return ((result * sign));
 }
 
-long int	get_time(void)
+size_t	get_time(void)
 {
 	struct timeval current;
 
@@ -50,51 +50,37 @@ long int	get_time(void)
 	return (current.tv_sec * 1000 + current.tv_usec / 1000);
 }
 
-void ft_prompt(t_philo *philo, char *display)
+int ft_prompt(t_philo *philo, char *display)
 {
 	size_t	start;
 
 	start = philo->data->start_time;
-	pthread_mutex_lock(&philo->data->dead);
-	if (philo->data->dead_flag == 0)
+	pthread_mutex_lock(philo->dead);
+	if (*philo->dead_flag == 0)
 	{
-		pthread_mutex_unlock(&philo->data->dead);
-		pthread_mutex_lock(philo->prompt);
-		printf("%lu %d %s\n", start - get_time(), philo->id, display);
-		pthread_mutex_unlock(philo->prompt);
-		return ;
+		printf("%lu %d %s\n", get_time() - start, philo->id, display);
+		pthread_mutex_unlock(philo->dead);
+		return (0);
 	}
-	pthread_mutex_unlock(&philo->data->dead);
+	pthread_mutex_unlock(philo->dead);
+	return (1);
 }
 
-void ft_usleep(size_t time)
+void ft_usleep(size_t time, t_philo *philo)
 {
 	size_t	start;
 
 	start = get_time();
-	while (start - get_time() < time)
+	while (get_time() - start < time)
+	{
 		usleep(1000);
+		pthread_mutex_lock(philo->dead);
+		if (*philo->dead_flag == 1)
+		{
+			pthread_mutex_unlock(philo->dead);
+			break;
+		}
+		pthread_mutex_unlock(philo->dead);
+	}
 }
 
-void free_all(t_data *data, t_philo *philos, char *display)
-{
-	int	i;
-
-	i = 0;
-	if (display)
-	{
-		while (display[i])
-			i++;
-		write(2, &display, i);
-	}
-	i = 0;
-	while (i < data->nbr_philo)
-	{
-		pthread_mutex_destroy(&data->forks[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&data->eating);
-	pthread_mutex_destroy(&data->prompt);
-	free(philos);
-	free(data);
-}
